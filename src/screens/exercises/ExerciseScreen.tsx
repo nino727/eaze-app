@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { useTheme } from '@shopify/restyle';
 import { Theme } from '../../theme/theme';
 import { Box } from '../../components/Box';
@@ -9,6 +9,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Exercise } from '../../types';
+import { Card } from '../../components/ui/Card';
+import { Button } from '../../components/ui/Button';
 
 export const ExerciseScreen: React.FC = () => {
   const theme = useTheme<Theme>();
@@ -99,13 +101,17 @@ export const ExerciseScreen: React.FC = () => {
         borderBottomWidth={1}
         borderBottomColor="gray200"
       >
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <Button
+          onPress={() => navigation.goBack()}
+          variant="outline"
+          size="sm"
+        >
           <Ionicons
             name="arrow-back"
             size={24}
             color={theme.colors.text}
           />
-        </TouchableOpacity>
+        </Button>
         <Text variant="header" color="text">
           {exercise.title}
         </Text>
@@ -113,70 +119,53 @@ export const ExerciseScreen: React.FC = () => {
       </Box>
 
       <Box flex={1} padding="m">
-        <Box
-          backgroundColor="primary"
-          borderRadius="l"
-          padding="l"
-          marginBottom="l"
-        >
-          <Text variant="title" color="mainBackground" marginBottom="s">
-            Step {currentStep + 1} of {exercise.steps.length}
-          </Text>
-          <Text variant="body" color="mainBackground">
-            {exercise.steps[currentStep]}
-          </Text>
-        </Box>
+        <Card
+          variant="primary"
+          title={`Step ${currentStep + 1} of ${exercise.steps.length}`}
+          description={exercise.steps[currentStep]}
+        />
 
-        <Box flexDirection="row" justifyContent="space-between" marginBottom="l">
-          <TouchableOpacity
+        <Box flexDirection="row" justifyContent="space-between" marginTop="l">
+          <Button
             onPress={previousStep}
             disabled={currentStep === 0}
-            style={[
-              styles.button,
-              {
-                backgroundColor: theme.colors.gray200,
-                opacity: currentStep === 0 ? 0.5 : 1,
-              },
-            ]}
+            variant="outline"
+            size="lg"
           >
             <Ionicons
               name="arrow-back"
               size={24}
               color={theme.colors.text}
             />
-          </TouchableOpacity>
+          </Button>
 
-          <TouchableOpacity
+          <Button
             onPress={playSound}
-            style={[styles.button, { backgroundColor: theme.colors.primary }]}
+            variant="primary"
+            size="lg"
           >
             <Ionicons
               name={isPlaying ? 'pause' : 'play'}
               size={24}
               color={theme.colors.mainBackground}
             />
-          </TouchableOpacity>
+          </Button>
 
-          <TouchableOpacity
+          <Button
             onPress={nextStep}
             disabled={currentStep === exercise.steps.length - 1}
-            style={[
-              styles.button,
-              {
-                backgroundColor: theme.colors.gray200,
-                opacity: currentStep === exercise.steps.length - 1 ? 0.5 : 1,
-              },
-            ]}
+            variant="outline"
+            size="lg"
           >
             <Ionicons
               name="arrow-forward"
               size={24}
               color={theme.colors.text}
             />
-          </TouchableOpacity>
+          </Button>
         </Box>
 
-        <Box>
+        <Box marginTop="l">
           <Text variant="title" color="text" marginBottom="s">
             Benefits
           </Text>
@@ -208,12 +197,5 @@ export const ExerciseScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  button: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 }); 
