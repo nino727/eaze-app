@@ -1,9 +1,11 @@
-import React from 'react';
-import { TextInput, StyleSheet, View } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { TextInput, StyleSheet } from 'react-native';
 import { useTheme } from '@shopify/restyle';
 import { Theme } from '../../theme/theme';
 import { Text } from '../Text';
 import { Box } from '../Box';
+import { withPerformance } from '../withPerformance';
+import { performanceMonitor } from '../../utils/performance';
 
 interface InputProps {
   value: string;
@@ -14,9 +16,11 @@ interface InputProps {
   secureTextEntry?: boolean;
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
   keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
+  onFocus?: () => void;
+  onBlur?: () => void;
 }
 
-export const Input: React.FC<InputProps> = ({
+const InputComponent: React.FC<InputProps> = ({
   value,
   onChangeText,
   placeholder,
@@ -25,8 +29,37 @@ export const Input: React.FC<InputProps> = ({
   secureTextEntry,
   autoCapitalize = 'none',
   keyboardType = 'default',
+  onFocus,
+  onBlur,
 }) => {
   const theme = useTheme<Theme>();
+
+  const handleChangeText = useCallback((text: string) => {
+    performanceMonitor.startMeasure('input-change');
+    onChangeText(text);
+    performanceMonitor.endMeasure('input-change');
+  }, [onChangeText]);
+
+  const handleFocus = useCallback(() => {
+    performanceMonitor.startMeasure('input-focus');
+    onFocus?.();
+    performanceMonitor.endMeasure('input-focus');
+  }, [onFocus]);
+
+  const handleBlur = useCallback(() => {
+    performanceMonitor.startMeasure('input-blur');
+    onBlur?.();
+    performanceMonitor.endMeasure('input-blur');
+  }, [onBlur]);
+
+  const inputStyle = useMemo(() => [
+    styles.input,
+    {
+      backgroundColor: theme.colors.mainBackground,
+      color: theme.colors.text,
+      borderColor: error ? theme.colors.error : theme.colors.cardPrimaryBackground,
+    },
+  ], [theme.colors, error]);
 
   return (
     <Box marginBottom="m">
@@ -41,18 +74,13 @@ export const Input: React.FC<InputProps> = ({
         </Box>
       )}
       <TextInput
-        style={[
-          styles.input,
-          {
-            backgroundColor: theme.colors.gray100,
-            color: theme.colors.text,
-            borderColor: error ? theme.colors.error : theme.colors.gray200,
-          },
-        ]}
+        style={inputStyle}
         placeholder={placeholder}
-        placeholderTextColor={theme.colors.gray400}
+        placeholderTextColor={theme.colors.textSecondary}
         value={value}
-        onChangeText={onChangeText}
+        onChangeText={handleChangeText}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
         secureTextEntry={secureTextEntry}
         autoCapitalize={autoCapitalize}
         keyboardType={keyboardType}
@@ -79,4 +107,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     fontSize: 16,
   },
-}); 
+});
+
+export const Input = withPerformance(InputComponent, 'Input'); 

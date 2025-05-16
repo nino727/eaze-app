@@ -15,7 +15,9 @@ module.exports = {
     'react/prop-types': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'warn',
+    '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     'prettier/prettier': 'error',
+    'no-console': ['warn', { allow: ['warn', 'error', 'time', 'timeEnd'] }],
   },
   settings: {
     react: {
@@ -24,5 +26,7 @@ module.exports = {
   },
   env: {
     'react-native/react-native': true,
+    jest: true,
   },
+  ignorePatterns: ['node_modules/', 'build/', 'dist/', '*.config.js'],
 }; 
