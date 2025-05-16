@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { ReactNode, ErrorInfo } from 'react';
 import { Box } from './Box';
 import { Text } from './Text';
 import { Button } from './Button';
 
 interface Props {
-  children: React.ReactNode;
+  children: ReactNode;
   sectionName: string;
   onRetry?: () => void;
 }
@@ -24,7 +24,8 @@ export class SectionErrorBoundary extends React.Component<Props, State> {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    // eslint-disable-next-line no-console
     console.error(`Error in ${this.props.sectionName}:`, error, errorInfo);
   }
 

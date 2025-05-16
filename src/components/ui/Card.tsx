@@ -19,7 +19,7 @@ export const Card: React.FC<CardProps> = ({
   onPress,
   children,
   variant = 'default',
-}) => {
+}: CardProps) => {
   const theme = useTheme<Theme>();
 
   const getBackgroundColor = () => {
@@ -40,7 +40,7 @@ export const Card: React.FC<CardProps> = ({
     }
   };
 
-  const Container = onPress ? TouchableOpacity : Box;
+  const Container: React.ElementType = onPress ? TouchableOpacity : Box;
 
   return (
     <Container
@@ -64,7 +64,7 @@ export const Card: React.FC<CardProps> = ({
         {description && (
           <Text
             variant="body"
-            color={variant === 'primary' ? 'mainBackground' : 'textSecondary'}
+            color={variant === 'primary' ? 'background' : 'textSecondary'}
           >
             {description}
           </Text>

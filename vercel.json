@@ -5,7 +5,7 @@
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist"
+        "distDir": "web-build"
       }
     }
   ],
@@ -15,10 +15,8 @@
       "dest": "/index.html"
     }
   ],
-  "functions": {
-    "api/**/*.ts": {
-      "memory": 1024,
-      "maxDuration": 10
-    }
-  }
+  "buildCommand": "npm run build",
+  "outputDirectory": "web-build",
+  "framework": "expo",
+  "installCommand": "npm install"
 } 

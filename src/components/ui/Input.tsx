@@ -31,7 +31,7 @@ const InputComponent: React.FC<InputProps> = ({
   keyboardType = 'default',
   onFocus,
   onBlur,
-}) => {
+}: InputProps) => {
   const theme = useTheme<Theme>();
 
   const handleChangeText = useCallback((text: string) => {
