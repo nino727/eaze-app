@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, ViewProps, StyleSheet, DimensionValue } from 'react-native';
 import { useTheme } from '@shopify/restyle';
-import { Theme } from '../theme/theme';
+import { Theme } from '../theme';
 
-interface BoxProps extends ViewProps {
+export interface BoxProps extends ViewProps {
   backgroundColor?: keyof Theme['colors'];
   padding?: keyof Theme['spacing'];
   paddingHorizontal?: keyof Theme['spacing'];
@@ -13,9 +13,12 @@ interface BoxProps extends ViewProps {
   marginBottom?: keyof Theme['spacing'];
   marginLeft?: keyof Theme['spacing'];
   marginRight?: keyof Theme['spacing'];
+  marginHorizontal?: keyof Theme['spacing'];
   borderRadius?: keyof Theme['borderRadii'];
   borderWidth?: number;
   borderColor?: keyof Theme['colors'];
+  borderTopWidth?: number;
+  borderTopColor?: keyof Theme['colors'];
   borderBottomWidth?: number;
   borderBottomColor?: keyof Theme['colors'];
   flex?: number;
@@ -25,6 +28,8 @@ interface BoxProps extends ViewProps {
   width?: DimensionValue;
   height?: DimensionValue;
   opacity?: number;
+  position?: 'absolute' | 'relative';
+  overflow?: 'hidden' | 'visible' | 'scroll';
 }
 
 export const Box: React.FC<BoxProps> = ({
@@ -37,9 +42,12 @@ export const Box: React.FC<BoxProps> = ({
   marginBottom,
   marginLeft,
   marginRight,
+  marginHorizontal,
   borderRadius,
   borderWidth,
   borderColor,
+  borderTopWidth,
+  borderTopColor,
   borderBottomWidth,
   borderBottomColor,
   flex,
@@ -49,6 +57,8 @@ export const Box: React.FC<BoxProps> = ({
   width,
   height,
   opacity,
+  position,
+  overflow,
   style,
   ...props
 }) => {
@@ -65,9 +75,12 @@ export const Box: React.FC<BoxProps> = ({
       marginBottom: marginBottom ? theme.spacing[marginBottom] : undefined,
       marginLeft: marginLeft ? theme.spacing[marginLeft] : undefined,
       marginRight: marginRight ? theme.spacing[marginRight] : undefined,
+      marginHorizontal: marginHorizontal ? theme.spacing[marginHorizontal] : undefined,
       borderRadius: borderRadius ? theme.borderRadii[borderRadius] : undefined,
       borderWidth,
       borderColor: borderColor ? theme.colors[borderColor] : undefined,
+      borderTopWidth,
+      borderTopColor: borderTopColor ? theme.colors[borderTopColor] : undefined,
       borderBottomWidth,
       borderBottomColor: borderBottomColor ? theme.colors[borderBottomColor] : undefined,
       flex,
@@ -77,6 +90,8 @@ export const Box: React.FC<BoxProps> = ({
       width,
       height,
       opacity,
+      position,
+      overflow,
     },
   });
 

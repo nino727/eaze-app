@@ -1,196 +1,283 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Image } from 'react-native';
+import { View, ScrollView, StyleSheet, Dimensions, Pressable } from 'react-native';
 import { useTheme } from '@shopify/restyle';
-import { Theme } from '../theme/theme';
-import { Box } from '../components/Box';
-import { Text } from '../components/Text';
-import { Card } from '../components/Card';
-import { Button } from '../components/Button';
+import { Theme } from '../theme';
+import { Text } from '../components/ui/Text';
+import { Button } from '../components/ui/Button';
+import { Icon } from '../components/ui/Icon';
 import Animated, {
   FadeInDown,
   FadeInRight,
+  useAnimatedStyle,
+  withSpring,
+  useSharedValue,
 } from 'react-native-reanimated';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../types/navigation';
+import { useStore } from '../store';
+import { Box } from '../components/Box';
+import { calculateStreak, calculateAchievements, Achievement } from '../utils/streak';
 
-const AnimatedCard = Animated.createAnimatedComponent(Card);
+const { width } = Dimensions.get('window');
 
 export const ProfileScreen = () => {
   const theme = useTheme<Theme>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { user, exerciseHistory, moodHistory, isDarkMode, toggleDarkMode } = useStore();
 
-  const userData = {
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    joinDate: 'January 2024',
-    level: 'Intermediate',
-    streak: 7,
+  const stats = {
+    totalExercises: exerciseHistory.length,
+    totalMinutes: exerciseHistory.reduce((acc, curr) => acc + curr.duration, 0),
+    streak: calculateStreak(exerciseHistory),
+    averageMood: moodHistory.length > 0
+      ? moodHistory.reduce((acc, curr) => acc + curr.rating, 0) / moodHistory.length
+      : 0,
   };
 
-  const stats = [
-    {
-      title: 'Total Sessions',
-      value: '48',
-    },
-    {
-      title: 'Hours Meditated',
-      value: '12',
-    },
-    {
-      title: 'Current Streak',
-      value: `${userData.streak} days`,
-    },
-  ];
+  const achievements = calculateAchievements(exerciseHistory, moodHistory);
+
+  // Animation values for achievement cards
+  const achievementScale = useSharedValue(1);
+  const achievementStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: achievementScale.value }],
+  }));
+
+  const handleAchievementPress = () => {
+    achievementScale.value = withSpring(0.95, {}, () => {
+      achievementScale.value = withSpring(1);
+    });
+  };
 
   return (
-    <Box flex={1} backgroundColor="background">
-      <ScrollView
-        style={styles.container}
-        showsVerticalScrollIndicator={false}
-      >
-        <Box padding="l">
-          <AnimatedCard
-            entering={FadeInDown.delay(0)}
-            marginBottom="l"
-            variant="elevated"
-          >
-            <Box alignItems="center">
-              <Box
-                width={100}
-                height={100}
-                borderRadius="xl"
-                backgroundColor="gray200"
-                marginBottom="m"
-                overflow="hidden"
-              >
-                <Image
-                  source={{ uri: 'https://via.placeholder.com/100' }}
-                  style={styles.avatar}
-                />
-              </Box>
-              <Text variant="header" marginBottom="xs">
-                {userData.name}
-              </Text>
-              <Text variant="bodySmall" color="gray600" marginBottom="m">
-                {userData.email}
-              </Text>
-              <Button
-                label="Edit Profile"
-                variant="secondary"
-                onPress={() => {}}
-              />
-            </Box>
-          </AnimatedCard>
+    <ScrollView
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      showsVerticalScrollIndicator={false}
+    >
+      <Animated.View entering={FadeInDown.delay(200)} style={styles.header}>
+        <View style={styles.avatarContainer}>
+          <View style={[styles.avatar, { backgroundColor: theme.colors.primary }]}>
+            <Text variant="header" color="background">
+              {user?.name?.[0]?.toUpperCase() || 'U'}
+            </Text>
+          </View>
+        </View>
+        <Text variant="header" style={styles.name}>
+          {user?.name || 'User'}
+        </Text>
+        <Text variant="bodySmall" color="textSecondary">
+          {user?.email || 'user@example.com'}
+        </Text>
+      </Animated.View>
 
-          <AnimatedCard
-            entering={FadeInRight.delay(100)}
-            marginBottom="l"
-          >
-            <Box>
-              <Text variant="body" fontWeight="600" marginBottom="m">
-                Member Since
-              </Text>
-              <Text variant="bodySmall" color="gray600">
-                {userData.joinDate}
-              </Text>
-            </Box>
-          </AnimatedCard>
-
-          <AnimatedCard
-            entering={FadeInRight.delay(200)}
-            marginBottom="l"
-          >
-            <Box>
-              <Text variant="body" fontWeight="600" marginBottom="m">
-                Level
-              </Text>
-              <Box
-                flexDirection="row"
-                alignItems="center"
-                marginBottom="s"
-              >
-                <Box
-                  width={40}
-                  height={40}
-                  borderRadius="m"
-                  backgroundColor="primary"
-                  alignItems="center"
-                  justifyContent="center"
-                  marginRight="s"
-                >
-                  <Text variant="header" color="white">
-                    {userData.level[0]}
-                  </Text>
-                </Box>
-                <Text variant="body" fontWeight="600">
-                  {userData.level}
-                </Text>
-              </Box>
-              <Text variant="bodySmall" color="gray600">
-                Keep practicing to reach the next level
-              </Text>
-            </Box>
-          </AnimatedCard>
-
-          <AnimatedCard
-            entering={FadeInRight.delay(300)}
-            marginBottom="l"
-          >
-            <Box>
-              <Text variant="body" fontWeight="600" marginBottom="m">
-                Statistics
-              </Text>
-              {stats.map((stat) => (
-                <Box
-                  key={stat.title}
-                  flexDirection="row"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  marginBottom="s"
-                >
-                  <Text variant="bodySmall" color="gray600">
-                    {stat.title}
-                  </Text>
-                  <Text variant="body" fontWeight="600">
-                    {stat.value}
-                  </Text>
-                </Box>
-              ))}
-            </Box>
-          </AnimatedCard>
-
-          <AnimatedCard
-            entering={FadeInRight.delay(400)}
-          >
-            <Box>
-              <Text variant="body" fontWeight="600" marginBottom="m">
-                Preferences
-              </Text>
-              <Box marginBottom="s">
-                <Button
-                  label="Notification Settings"
-                  variant="secondary"
-                  onPress={() => {}}
-                  fullWidth
-                />
-              </Box>
-              <Button
-                label="Privacy Settings"
-                variant="secondary"
-                onPress={() => {}}
-                fullWidth
-              />
-            </Box>
-          </AnimatedCard>
+      <Animated.View entering={FadeInDown.delay(400)} style={styles.statsContainer}>
+        <Box
+          backgroundColor="backgroundAlt"
+          padding="m"
+          borderRadius="m"
+          flex={1}
+          marginRight="s"
+        >
+          <Text variant="title" color="textSecondary">
+            Exercises
+          </Text>
+          <Text variant="header" style={styles.statValue}>
+            {stats.totalExercises}
+          </Text>
         </Box>
-      </ScrollView>
-    </Box>
+        <Box
+          backgroundColor="backgroundAlt"
+          padding="m"
+          borderRadius="m"
+          flex={1}
+          marginLeft="s"
+        >
+          <Text variant="title" color="textSecondary">
+            Minutes
+          </Text>
+          <Text variant="header" style={styles.statValue}>
+            {stats.totalMinutes}
+          </Text>
+        </Box>
+      </Animated.View>
+
+      <Animated.View entering={FadeInDown.delay(500)} style={styles.statsContainer}>
+        <Box
+          backgroundColor="backgroundAlt"
+          padding="m"
+          borderRadius="m"
+          flex={1}
+          marginRight="s"
+        >
+          <Text variant="title" color="textSecondary">
+            Streak
+          </Text>
+          <Text variant="header" style={styles.statValue}>
+            {stats.streak} days
+          </Text>
+        </Box>
+        <Box
+          backgroundColor="backgroundAlt"
+          padding="m"
+          borderRadius="m"
+          flex={1}
+          marginLeft="s"
+        >
+          <Text variant="title" color="textSecondary">
+            Avg. Mood
+          </Text>
+          <Text variant="header" style={styles.statValue}>
+            {stats.averageMood.toFixed(1)}
+          </Text>
+        </Box>
+      </Animated.View>
+
+      <Animated.View entering={FadeInDown.delay(600)} style={styles.section}>
+        <Text variant="title" style={styles.sectionTitle}>
+          Achievements
+        </Text>
+        {achievements.map((achievement: Achievement, index: number) => (
+          <Pressable
+            key={achievement.id}
+            onPress={handleAchievementPress}
+          >
+            <Animated.View
+              entering={FadeInRight.delay(200 * index)}
+              style={[styles.achievementItem, achievementStyle]}
+            >
+              <Icon
+                name={achievement.icon}
+                size={24}
+                color={achievement.unlocked ? theme.colors.primary : theme.colors.textSecondary}
+              />
+              <View style={styles.achievementContent}>
+                <Text 
+                  variant="body" 
+                  color={achievement.unlocked ? 'text' : 'textSecondary'}
+                >
+                  {achievement.title}
+                </Text>
+                <Text variant="caption" color="textSecondary">
+                  {achievement.description}
+                </Text>
+              </View>
+              {achievement.unlocked && (
+                <Icon
+                  name="check"
+                  size={20}
+                  color={theme.colors.primary}
+                />
+              )}
+            </Animated.View>
+          </Pressable>
+        ))}
+      </Animated.View>
+
+      <Animated.View entering={FadeInDown.delay(800)} style={styles.section}>
+        <Text variant="title" style={styles.sectionTitle}>
+          Settings
+        </Text>
+        <Box
+          backgroundColor="backgroundAlt"
+          padding="m"
+          borderRadius="m"
+          marginBottom="s"
+        >
+          <Button
+            variant="outline"
+            size="md"
+            label="Notifications"
+            onPress={() => navigation.navigate('Notifications')}
+          />
+        </Box>
+        <Box
+          backgroundColor="backgroundAlt"
+          padding="m"
+          borderRadius="m"
+          marginBottom="s"
+        >
+          <Button
+            variant="outline"
+            size="md"
+            label={isDarkMode ? 'Light Mode' : 'Dark Mode'}
+            onPress={toggleDarkMode}
+          />
+        </Box>
+        <Box
+          backgroundColor="backgroundAlt"
+          padding="m"
+          borderRadius="m"
+          marginBottom="s"
+        >
+          <Button
+            variant="outline"
+            size="md"
+            label="Subscription"
+            onPress={() => navigation.navigate('Subscription')}
+          />
+        </Box>
+        <Box
+          backgroundColor="backgroundAlt"
+          padding="m"
+          borderRadius="m"
+        >
+          <Button
+            variant="outline"
+            size="md"
+            label="Buddy System"
+            onPress={() => navigation.navigate('BuddySystem')}
+          />
+        </Box>
+      </Animated.View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 16,
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  avatarContainer: {
+    marginBottom: 16,
   },
   avatar: {
-    width: '100%',
-    height: '100%',
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  name: {
+    marginBottom: 4,
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    marginBottom: 16,
+  },
+  statValue: {
+    marginTop: 8,
+  },
+  section: {
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    marginBottom: 16,
+  },
+  achievementItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F2F2F7',
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  achievementContent: {
+    marginLeft: 12,
+    flex: 1,
   },
 }); 

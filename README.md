@@ -1,15 +1,19 @@
 # Ease App
 
-A mobile application for managing and tracking mental health exercises.
+A modern mental health exercise tracking application built with React Native and Expo.
+
+## Important Notice
+
+**Medical Disclaimer**: This application is designed as a supplementary tool for mental health exercises and is not intended to replace professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition. Never disregard professional medical advice or delay in seeking it because of something you have read or used in this application.
 
 ## Features
 
-- Exercise tracking and history
-- Mood monitoring
-- Guided breathing exercises
-- Progress tracking
-- User authentication
-- Dark mode support
+- 🧘‍♂️ Guided breathing exercises
+- 📊 Exercise tracking and history
+- 🎯 Progress monitoring
+- 🌙 Dark mode support
+- 🔐 Secure authentication
+- 📱 Cross-platform (iOS & Android)
 
 ## Tech Stack
 
@@ -22,19 +26,21 @@ A mobile application for managing and tracking mental health exercises.
 - React Native Reanimated
 - Expo AV
 
-## Prerequisites
+## Getting Started
+
+### Prerequisites
 
 - Node.js (v14 or later)
 - npm or yarn
 - Expo CLI
 - Supabase account
 
-## Setup
+### Installation
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/ease-app.git
-cd ease-app
+git clone https://github.com/nino727/eaze-app.git
+cd eaze-app
 ```
 
 2. Install dependencies:
@@ -42,14 +48,19 @@ cd ease-app
 npm install
 ```
 
-3. Create a `.env` file in the root directory with the following variables:
+3. Create a `.env` file in the root directory:
+```bash
+cp .env.example .env
+```
+
+4. Update the `.env` file with your credentials:
 ```
 SUPABASE_URL=your_supabase_url
 SUPABASE_ANON_KEY=your_supabase_anon_key
 EAS_PROJECT_ID=your_eas_project_id
 ```
 
-4. Start the development server:
+5. Start the development server:
 ```bash
 npm start
 ```
@@ -94,4 +105,11 @@ eas build --platform android
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. 
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- [Expo](https://expo.dev/)
+- [React Native](https://reactnative.dev/)
+- [Supabase](https://supabase.io/)
+- [shadcn/ui](https://ui.shadcn.com/) for design inspiration 

@@ -6,97 +6,93 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useTheme } from '@shopify/restyle';
-import { Theme } from '../theme/theme';
+import { Theme } from '../theme';
 import { Text } from './Text';
+import { Box } from './Box';
 
-interface ButtonProps extends TouchableOpacityProps {
+export interface ButtonProps {
   label: string;
   variant?: 'primary' | 'secondary' | 'outline';
-  isLoading?: boolean;
-  marginBottom?: keyof Theme['spacing'];
-  marginTop?: keyof Theme['spacing'];
+  size?: 'small' | 'medium' | 'large';
+  onPress: () => void;
+  disabled?: boolean;
+  loading?: boolean;
+  fullWidth?: boolean;
 }
 
 export const Button: React.FC<ButtonProps> = ({
   label,
   variant = 'primary',
-  isLoading,
-  marginBottom,
-  marginTop,
-  style,
-  disabled,
-  ...props
+  size = 'medium',
+  onPress,
+  disabled = false,
+  loading = false,
+  fullWidth = false,
 }) => {
   const theme = useTheme<Theme>();
 
-  const getButtonStyle = () => {
-    switch (variant) {
-      case 'primary':
-        return {
-          backgroundColor: disabled ? theme.colors.gray400 : theme.colors.primary,
-        };
-      case 'secondary':
-        return {
-          backgroundColor: disabled ? theme.colors.gray200 : theme.colors.secondary,
-        };
-      case 'outline':
-        return {
-          backgroundColor: 'transparent',
-          borderWidth: 1,
-          borderColor: disabled ? theme.colors.gray400 : theme.colors.primary,
-        };
-      default:
-        return {};
-    }
+  const getBackgroundColor = (): keyof Theme['colors'] => {
+    if (disabled) return 'gray300';
+    if (variant === 'primary') return 'primary';
+    if (variant === 'secondary') return 'secondary';
+    return 'background';
   };
 
-  const getTextColor = () => {
-    switch (variant) {
-      case 'primary':
-      case 'secondary':
-        return 'white';
-      case 'outline':
-        return disabled ? 'gray400' : 'primary';
-      default:
-        return 'text';
-    }
+  const getTextColor = (): keyof Theme['colors'] => {
+    if (disabled) return 'gray600';
+    if (variant === 'outline') return 'primary';
+    return 'background';
   };
+
+  const getBorderColor = (): keyof Theme['colors'] => {
+    if (disabled) return 'gray300';
+    if (variant === 'outline') return 'primary';
+    return 'background';
+  };
+
+  const getPadding = () => {
+    if (size === 'small') return theme.spacing.s;
+    if (size === 'large') return theme.spacing.l;
+    return theme.spacing.m;
+  };
+
+  const styles = StyleSheet.create({
+    button: {
+      backgroundColor: theme.colors[getBackgroundColor()],
+      borderWidth: variant === 'outline' ? 1 : 0,
+      borderColor: theme.colors[getBorderColor()],
+      borderRadius: theme.borderRadii.m,
+      padding: getPadding(),
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: fullWidth ? '100%' : 'auto',
+      flexDirection: 'row',
+    },
+    text: {
+      marginRight: loading ? theme.spacing.s : 0,
+    },
+  });
 
   return (
     <TouchableOpacity
-      style={[
-        styles.button,
-        getButtonStyle(),
-        marginBottom && { marginBottom: theme.spacing[marginBottom] },
-        marginTop && { marginTop: theme.spacing[marginTop] },
-        style,
-      ]}
-      disabled={disabled || isLoading}
-      {...props}
+      style={styles.button}
+      onPress={onPress}
+      disabled={disabled || loading}
+      activeOpacity={0.8}
     >
-      {isLoading ? (
-        <ActivityIndicator color={getTextColor()} />
-      ) : (
-        <Text
-          variant="button"
-          color={getTextColor()}
-          style={styles.label}
-        >
-          {label}
-        </Text>
+      <Text
+        variant="button"
+        color={getTextColor()}
+        style={styles.text}
+      >
+        {label}
+      </Text>
+      {loading && (
+        <ActivityIndicator
+          size="small"
+          color={theme.colors[getTextColor()]}
+        />
       )}
     </TouchableOpacity>
   );
-};
-
-const styles = StyleSheet.create({
-  button: {
-    height: 48,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  label: {
-    textAlign: 'center',
-  },
-}); 
+}; 

@@ -4,15 +4,18 @@ export interface Exercise {
   id: string;
   title: string;
   description: string;
+  longDescription?: string;
   duration: number;
-  category: 'breathing' | 'meditation' | 'mindfulness';
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
-  audioUrl?: string;
-  imageUrl?: string;
-  steps: string[];
-  benefits: string[];
-  createdAt: string;
-  updatedAt: string;
+  category: string;
+  level: 'beginner' | 'intermediate' | 'advanced';
+  icon: string;
+  color: string;
+  instructions: string[];
+  steps: {
+    title: string;
+    description: string;
+    duration: number;
+  }[];
 }
 
 export interface Affirmation {
@@ -262,26 +265,27 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  createdAt: string;
-  lastLoginAt: string;
+  avatar?: string;
   preferences: {
     notifications: boolean;
     darkMode: boolean;
     soundEnabled: boolean;
+  };
+  stats: {
+    totalExercises: number;
+    totalMinutes: number;
+    streak: number;
+    lastExercise?: string;
   };
 }
 
 export interface ExerciseHistory {
   id: string;
   exerciseId: string;
-  userId: string;
   completedAt: string;
   duration: number;
-  rating: number;
+  rating?: number;
   notes?: string;
-  moodBefore: number;
-  moodAfter: number;
-  effectiveness: number;
 }
 
 export interface MoodEntry {

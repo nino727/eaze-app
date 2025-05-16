@@ -1,40 +1,45 @@
 import React from 'react';
 import { Text as RNText, TextProps as RNTextProps, StyleSheet } from 'react-native';
-import { useTheme, createText } from '@shopify/restyle';
-import { Theme } from '../theme/theme';
+import { useTheme } from '@shopify/restyle';
+import { Theme } from '../theme';
 
-const BaseText = createText<Theme>();
-
-interface TextProps extends RNTextProps {
+export interface TextProps extends RNTextProps {
   variant?: keyof Theme['textVariants'];
   color?: keyof Theme['colors'];
-  fontWeight?: 'normal' | '600' | 'bold';
+  textAlign?: 'auto' | 'left' | 'right' | 'center' | 'justify';
   marginBottom?: keyof Theme['spacing'];
+  marginTop?: keyof Theme['spacing'];
+  marginLeft?: keyof Theme['spacing'];
   marginRight?: keyof Theme['spacing'];
+  opacity?: number;
 }
 
 export const Text: React.FC<TextProps> = ({
   variant = 'body',
-  color,
-  fontWeight,
+  color = 'text',
+  textAlign,
   marginBottom,
+  marginTop,
+  marginLeft,
   marginRight,
+  opacity,
   style,
   ...props
 }) => {
   const theme = useTheme<Theme>();
 
-  return (
-    <BaseText
-      variant={variant}
-      color={color}
-      style={[
-        style,
-        fontWeight && { fontWeight },
-        marginBottom && { marginBottom: theme.spacing[marginBottom] },
-        marginRight && { marginRight: theme.spacing[marginRight] },
-      ]}
-      {...props}
-    />
-  );
+  const styles = StyleSheet.create({
+    text: {
+      ...theme.textVariants[variant],
+      color: theme.colors[color],
+      textAlign,
+      marginBottom: marginBottom ? theme.spacing[marginBottom] : undefined,
+      marginTop: marginTop ? theme.spacing[marginTop] : undefined,
+      marginLeft: marginLeft ? theme.spacing[marginLeft] : undefined,
+      marginRight: marginRight ? theme.spacing[marginRight] : undefined,
+      opacity,
+    },
+  });
+
+  return <RNText style={[styles.text, style]} {...props} />;
 }; 

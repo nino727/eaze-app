@@ -2,21 +2,25 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../components/ui/Icon';
 import { useTheme } from '@shopify/restyle';
-import { Theme } from '../theme/theme';
-import { RootStackParamList, MainTabParamList } from './types';
+import { Theme } from '../theme';
+import { RootStackParamList, MainTabParamList } from '../types/navigation';
 
 // Screens
-import { HomeScreen } from '../screens/HomeScreen';
-import { ExerciseScreen } from '../screens/exercises/ExerciseScreen';
-import { ExerciseHistoryScreen } from '../screens/exercises/ExerciseHistoryScreen';
-import { ProfileScreen } from '../screens/ProfileScreen';
-import { SettingsScreen } from '../screens/SettingsScreen';
 import { OnboardingScreen } from '../screens/OnboardingScreen';
 import { LoginScreen } from '../screens/auth/LoginScreen';
 import { SignUpScreen } from '../screens/auth/SignUpScreen';
 import { ForgotPasswordScreen } from '../screens/auth/ForgotPasswordScreen';
+import { HomeScreen } from '../screens/HomeScreen';
+import { ExerciseHistoryScreen } from '../screens/ExerciseHistoryScreen';
+import { ProfileScreen } from '../screens/ProfileScreen';
+import { ExerciseDetailScreen } from '../screens/ExerciseDetailScreen';
+import { ExerciseSessionScreen } from '../screens/ExerciseSessionScreen';
+import { SettingsScreen } from '../screens/SettingsScreen';
+import { NotificationsScreen } from '../screens/NotificationsScreen';
+import { SubscriptionScreen } from '../screens/SubscriptionScreen';
+import { BuddySystemScreen } from '../screens/BuddySystemScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -38,17 +42,19 @@ const linking = {
   },
 };
 
-function TabNavigator() {
+const MainTabs = () => {
   const theme = useTheme<Theme>();
 
   return (
     <Tab.Navigator
       screenOptions={{
         tabBarActiveTintColor: theme.colors.primary,
-        tabBarInactiveTintColor: theme.colors.gray400,
+        tabBarInactiveTintColor: theme.colors.textSecondary,
         tabBarStyle: {
-          borderTopColor: theme.colors.gray200,
+          backgroundColor: theme.colors.background,
+          borderTopColor: theme.colors.border,
         },
+        headerShown: false,
       }}
     >
       <Tab.Screen
@@ -56,7 +62,7 @@ function TabNavigator() {
         component={HomeScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={size} color={color} />
+            <Icon name="home" size={size} color={color} />
           ),
         }}
       />
@@ -64,9 +70,9 @@ function TabNavigator() {
         name="ExerciseHistory"
         component={ExerciseHistoryScreen}
         options={{
-          title: 'History',
+          tabBarLabel: 'History',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="time" size={size} color={color} />
+            <Icon name="timer" size={size} color={color} />
           ),
         }}
       />
@@ -75,30 +81,111 @@ function TabNavigator() {
         component={ProfileScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={size} color={color} />
+            <Icon name="profile" size={size} color={color} />
           ),
         }}
       />
     </Tab.Navigator>
   );
-}
+};
 
-export function Navigation() {
+export const Navigation = () => {
+  const theme = useTheme<Theme>();
+
   return (
     <NavigationContainer linking={linking}>
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
+          contentStyle: {
+            backgroundColor: theme.colors.background,
+          },
+          animation: 'slide_from_right',
+          animationDuration: 200,
+          gestureEnabled: true,
+          gestureDirection: 'horizontal',
+          presentation: 'card',
         }}
       >
-        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="SignUp" component={SignUpScreen} />
-        <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
-        <Stack.Screen name="Main" component={TabNavigator} />
-        <Stack.Screen name="Exercise" component={ExerciseScreen} />
-        <Stack.Screen name="Settings" component={SettingsScreen} />
+        <Stack.Screen 
+          name="Onboarding" 
+          component={OnboardingScreen}
+          options={{
+            animation: 'fade',
+          }}
+        />
+        <Stack.Screen 
+          name="Login" 
+          component={LoginScreen}
+          options={{
+            animation: 'fade',
+          }}
+        />
+        <Stack.Screen 
+          name="SignUp" 
+          component={SignUpScreen}
+          options={{
+            animation: 'fade',
+          }}
+        />
+        <Stack.Screen 
+          name="ForgotPassword" 
+          component={ForgotPasswordScreen}
+          options={{
+            animation: 'fade',
+          }}
+        />
+        <Stack.Screen 
+          name="Main" 
+          component={MainTabs}
+          options={{
+            animation: 'fade',
+          }}
+        />
+        <Stack.Screen 
+          name="ExerciseDetail" 
+          component={ExerciseDetailScreen}
+          options={{
+            animation: 'slide_from_bottom',
+          }}
+        />
+        <Stack.Screen 
+          name="ExerciseSession" 
+          component={ExerciseSessionScreen}
+          options={{
+            animation: 'slide_from_bottom',
+            gestureEnabled: false,
+          }}
+        />
+        <Stack.Screen 
+          name="Settings" 
+          component={SettingsScreen}
+          options={{
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen 
+          name="Notifications" 
+          component={NotificationsScreen}
+          options={{
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen 
+          name="Subscription" 
+          component={SubscriptionScreen}
+          options={{
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen 
+          name="BuddySystem" 
+          component={BuddySystemScreen}
+          options={{
+            animation: 'slide_from_right',
+          }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
-} 
+}; 

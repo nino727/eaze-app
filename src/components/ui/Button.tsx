@@ -1,12 +1,12 @@
 import React from 'react';
 import { TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { useTheme } from '@shopify/restyle';
-import { Theme } from '../../theme/theme';
-import { Text } from '../Text';
+import { Theme } from '../../theme';
+import { Text } from './Text';
 
 interface ButtonProps {
   onPress: () => void;
-  children: React.ReactNode;
+  label: string;
   variant?: 'primary' | 'secondary' | 'outline';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
@@ -15,7 +15,7 @@ interface ButtonProps {
 
 export const Button: React.FC<ButtonProps> = ({
   onPress,
-  children,
+  label,
   variant = 'primary',
   size = 'md',
   isLoading = false,
@@ -43,7 +43,7 @@ export const Button: React.FC<ButtonProps> = ({
       case 'outline':
         return theme.colors.primary;
       default:
-        return theme.colors.mainBackground;
+        return theme.colors.background;
     }
   };
 
@@ -73,14 +73,14 @@ export const Button: React.FC<ButtonProps> = ({
       ]}
     >
       {isLoading ? (
-        <ActivityIndicator color={getTextColor()} />
+        <ActivityIndicator color={variant === 'outline' ? theme.colors.primary : theme.colors.background} />
       ) : (
         <Text
-          variant="body"
-          color={variant === 'outline' ? 'primary' : 'mainBackground'}
+          variant="button"
+          color={variant === 'outline' ? 'primary' : 'background'}
           style={styles.text}
         >
-          {children}
+          {label}
         </Text>
       )}
     </TouchableOpacity>
