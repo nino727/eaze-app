@@ -56,7 +56,7 @@ export const Card: React.FC<CardProps> = ({
       <Box padding="m">
         <Text
           variant="title"
-          color={getTextColor()}
+          color={variant === 'primary' ? 'mainBackground' : 'text'}
           marginBottom={description ? 'xs' : undefined}
         >
           {title}

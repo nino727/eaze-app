@@ -3,6 +3,7 @@ import { TextInput, StyleSheet, View } from 'react-native';
 import { useTheme } from '@shopify/restyle';
 import { Theme } from '../../theme/theme';
 import { Text } from '../Text';
+import { Box } from '../Box';
 
 interface InputProps {
   value: string;
@@ -28,15 +29,16 @@ export const Input: React.FC<InputProps> = ({
   const theme = useTheme<Theme>();
 
   return (
-    <View style={styles.container}>
+    <Box marginBottom="m">
       {label && (
-        <Text
-          variant="caption"
-          color="textSecondary"
-          marginBottom="xs"
-        >
-          {label}
-        </Text>
+        <Box marginBottom="xs">
+          <Text
+            variant="caption"
+            color="textSecondary"
+          >
+            {label}
+          </Text>
+        </Box>
       )}
       <TextInput
         style={[
@@ -56,22 +58,20 @@ export const Input: React.FC<InputProps> = ({
         keyboardType={keyboardType}
       />
       {error && (
-        <Text
-          variant="caption"
-          color="error"
-          marginTop="xs"
-        >
-          {error}
-        </Text>
+        <Box marginTop="xs">
+          <Text
+            variant="caption"
+            color="error"
+          >
+            {error}
+          </Text>
+        </Box>
       )}
-    </View>
+    </Box>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    marginBottom: 16,
-  },
   input: {
     height: 44,
     borderRadius: 8,

@@ -77,7 +77,7 @@ export const Button: React.FC<ButtonProps> = ({
       ) : (
         <Text
           variant="body"
-          color={getTextColor()}
+          color={variant === 'outline' ? 'primary' : 'mainBackground'}
           style={styles.text}
         >
           {children}
